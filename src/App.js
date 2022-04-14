@@ -9,7 +9,7 @@ import ManageCompanies from "./pages/ManageCompanies";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex">
+      <div className="flex h-screen bg-gray-50">
         <Dashboard />
         <Routes>
           <Route path="/" element={<ManageUsers />} />

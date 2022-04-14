@@ -3,8 +3,8 @@ import DashboardLinks from "../components/DashboardLinks";
 
 function Dashboard() {
   return (
-    <aside className="w-64 " aria-label="Sidebar">
-      <div className="overflow-y-auto text-blue-600 py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
+    <aside className="w-64  " aria-label="Sidebar">
+      <div className="overflow-y-auto h-screen  bg-blue-600 text-white py-4 px-3  dark:bg-gray-800">
         <a
           href="https://destadeal.com"
           className="flex items-center pl-2.5 mb-16"

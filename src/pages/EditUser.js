@@ -16,7 +16,7 @@ function EditUser() {
       .then((res) => {
         setUser(res.data.usersDtoList);
       });
-  }, []);
+  }, [userId]);
   const handleOnChange = (e) => {
     setUser({
       ...user,
