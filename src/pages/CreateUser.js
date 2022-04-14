@@ -110,6 +110,21 @@ function CreateUser() {
         required={true}
         text={"User Name"}
       />
+      <div>
+        <label
+          className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 "
+          for="cars"
+        >
+          Role:{" "}
+        </label>
+
+        <select name="cars" id="cars">
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="mercedes">Mercedes</option>
+          <option value="audi">Audi</option>
+        </select>
+      </div>
       <TextInput
         handleOnChange={handleOnChange}
         type={"password"}

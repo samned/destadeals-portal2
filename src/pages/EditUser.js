@@ -1,63 +1,64 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function EditUser() {
-  const [user, setUser] = useState({
-    username: "",
-    firstName: "",
-    middleName: "",
-    gender: "",
-    lasttName: "",
-    userPhone: "",
-    email: "",
-    role: ["USER"],
-    password1: "",
-    password2: "",
-  });
+  const [user, setUser] = useState({ gender: "Male" });
+  const { userId } = useParams();
+  const [updated, setUpdated] = useState(false);
+  const [updateSuccessful, setUpdateSuccessful] = useState(false);
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/api/auth/findUserById`)
+      .post(
+        `${process.env.REACT_APP_API_URL}/api/auth/findUserById?id=${userId}`
+      )
       .then((res) => {
-        console.log(res);
+        setUser(res.data.usersDtoList);
       });
   }, []);
   const handleOnChange = (e) => {
-    if (e.target.name !== "gender") {
-      setUser({ ...user, [e.target.id]: e.target.value });
-    } else {
-      setUser({ ...user, [e.target.name]: e.target.value });
-    }
+    setUser({
+      ...user,
+      [e.target.name]:
+        e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    });
   };
+
   const onSubmit = (e) => {
     e.preventDefault();
-    const {
-      username,
-      firstName,
-      middleName,
-      lasttName,
-      gender,
-      userPhone,
-      email,
-      role,
-      password1: password,
-    } = user;
-
-    const reqData = {
-      username,
-      firstName,
-      lasttName,
-      middleName,
-      gender,
-      userPhone,
-      email,
-      role,
-      password,
-    };
+    setUpdated(false);
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/auth/updateUser`, user)
+      .then((res) => {
+        setUpdated(true);
+        setUpdateSuccessful(true);
+      })
+      .catch((err) => {
+        setUpdated(true);
+        setUpdateSuccessful(false);
+      });
   };
   return (
     <form className="mt-24 px-12" onSubmit={onSubmit}>
       <h1 className="font-bold mb-4 text-lg">Edit User</h1>
+      {updated && updateSuccessful && (
+        <div
+          class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+          role="alert"
+        >
+          <span class="font-medium">User Successfully updated!</span>
+        </div>
+      )}
+      {updated && !updateSuccessful && (
+        <div
+          class="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800"
+          role="alert"
+        >
+          <span class="font-medium">Error Occured</span> Change a few things up
+          and try submitting again.
+        </div>
+      )}
       <div className="grid xl:grid-cols-2 xl:gap-6">
         <div className="relative z-0 mb-6 w-full group">
           <input
@@ -65,14 +66,15 @@ function EditUser() {
               handleOnChange(e);
             }}
             type="text"
-            name="firstName"
-            id="firstName"
+            name="firstname"
+            value={user.firstname || ""}
+            id="firstname"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required={true}
           />
           <label
-            htmlFor="firstName"
+            htmlFor="firstname"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             First name
@@ -84,14 +86,15 @@ function EditUser() {
               handleOnChange(e);
             }}
             type="text"
-            name="middleName"
-            id="middleName"
+            name="middlename"
+            value={user.middlename || ""}
+            id="middlename"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required={true}
           />
           <label
-            htmlFor="middleName"
+            htmlFor="middlename"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Middle name
@@ -103,17 +106,39 @@ function EditUser() {
               handleOnChange(e);
             }}
             type="text"
-            name="lasttName"
-            id="lasttName"
+            name="lastname"
+            value={user.lastname || ""}
+            id="lastname"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required={true}
           />
           <label
-            htmlFor="lasttName"
+            htmlFor="lastname"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Last name
+          </label>
+        </div>
+        <div>
+          <label
+            htmlFor="active"
+            className="flex relative items-center mb-4 cursor-pointer"
+          >
+            <input
+              onChange={(e) => {
+                handleOnChange(e);
+              }}
+              type="checkbox"
+              id="active"
+              className="sr-only"
+              name="active"
+              checked={user.active || false}
+            />
+            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+            <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+              Active
+            </span>
           </label>
         </div>
       </div>
@@ -124,6 +149,7 @@ function EditUser() {
           }}
           id="email"
           type="email"
+          value={user.email || ""}
           name="email"
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
@@ -142,6 +168,7 @@ function EditUser() {
             handleOnChange(e);
           }}
           id="username"
+          value={user.username || ""}
           type="text"
           name="username"
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
@@ -155,44 +182,6 @@ function EditUser() {
           User Name
         </label>
       </div>
-      <div className="relative z-0 mb-6 w-full group">
-        <input
-          onChange={(e) => {
-            handleOnChange(e);
-          }}
-          type="password"
-          name="password"
-          id="password1"
-          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-          placeholder=" "
-          required={true}
-        />
-        <label
-          htmlFor="password"
-          className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-        >
-          Password
-        </label>
-      </div>
-      <div className="relative z-0 mb-6 w-full group">
-        <input
-          onChange={(e) => {
-            handleOnChange(e);
-          }}
-          type="password"
-          name="password2"
-          id="password2"
-          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-          placeholder=" "
-          required={true}
-        />
-        <label
-          htmlFor="password2"
-          className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-        >
-          Confirm password
-        </label>
-      </div>
 
       <div className="grid xl:grid-cols-2 xl:gap-6">
         <div className="relative z-0 mb-6 w-full group">
@@ -202,14 +191,15 @@ function EditUser() {
             }}
             type="tel"
             //pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-            name="userPhone"
-            id="userPhone"
+            value={user.phoneNumber || ""}
+            name="phoneNumber"
+            id="phoneNumber"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required={true}
           />
           <label
-            htmlFor="userPhone"
+            htmlFor="phoneNumber"
             className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Phone number
